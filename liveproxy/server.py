@@ -21,6 +21,7 @@ ACCEPTABLE_ERRNO = (
     errno.EPIPE,
 )
 
+_re_vlc = re.compile(r'vlc$', re.IGNORECASE)
 _re_streamlink = re.compile(r'streamlink$', re.IGNORECASE)
 _re_youtube_dl = re.compile(r'(?:youtube|yt)[_-]dl(?:p)?$', re.IGNORECASE)
 
@@ -94,6 +95,8 @@ class HTTPRequest(BaseHTTPRequestHandler):
             arglist.extend(['--stdout', '--loglevel', 'none'])
         elif _re_youtube_dl.search(prog):
             arglist.extend(['-o', '-', '--quiet', '--no-playlist', '--no-warnings', '--no-progress'])
+        elif _re_vlc.search(prog):
+            arglist.extend(['--sout="#std{mux=mp4,access=file,dst=-}"'])
         else:
             log.error('Video-Software is not supported.')
             self._headers(404, 'text/html', connection='close')
